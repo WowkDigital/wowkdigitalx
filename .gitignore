@@ -1,0 +1,5 @@
+.env
+.env.*
+!.env.example
+*.upload
+_landing_backup_*/
