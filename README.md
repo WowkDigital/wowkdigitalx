@@ -13,3 +13,5 @@ The contact form opens a draft in the visitor's email application; it does not s
 Tailwind CSS and fonts load from external providers. The brand explorer supports pointer interaction, touch controls, keyboard operation and reduced motion preferences.
 
 Scroll ruler: scroll-ruler.config.js controls the rail, section labels, mobile visibility and optional scroll smoothing. The default keeps native scrolling and supports keyboard navigation and reduced motion.
+
+Interactive Lab: Game of Life uses toroidal boundaries and starts with a glider. 1D Automata supports rules 0–255 and wrapping neighbours. Canvas drawing supports touch and keyboard; simulation work stops offscreen. Run core checks with: node --test automata.test.cjs.
