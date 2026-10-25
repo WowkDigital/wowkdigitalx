@@ -15,3 +15,5 @@ Tailwind CSS and fonts load from external providers. The brand explorer supports
 Scroll ruler: scroll-ruler.config.js controls the rail, section labels, mobile visibility and optional scroll smoothing. The default keeps native scrolling and supports keyboard navigation and reduced motion.
 
 Interactive Lab: Game of Life uses toroidal boundaries and starts with a glider. 1D Automata supports rules 0–255 and wrapping neighbours. Canvas drawing supports touch and keyboard; simulation work stops offscreen. Run core checks with: node --test automata.test.cjs.
+
+Intro: brand-intro.html adapts the supplied geometric HUD animation. intro.js opens a fullscreen dialog, supports Enter website, Escape and Replay intro, and removes the embedded animation when closed. Reduced-motion visitors and direct section links enter the content immediately; replay remains available. Animation configuration is local to each playback.

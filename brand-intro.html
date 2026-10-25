@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WOWK DIGITAL X — Geometric Intro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --fg:#f2f2f2;
+    --mid:#9a9a9a;
+    --dim:#5c5c5c;
+    --line:#333;
+    --bg:#1b1b1b;
+    --spd:1;
+    --size:80;
+    --cond:"Barlow Condensed","Oswald","Arial Narrow",sans-serif;
+    --mono:"JetBrains Mono","Consolas",monospace;
+    --ease:cubic-bezier(.7,0,.15,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);overflow:hidden}
+  body{font-family:var(--mono);color:var(--fg);cursor:none}
+  @media (hover:none){body{cursor:auto}.cur,.cdot,.ccoord{display:none}}
+  canvas#bg{position:fixed;inset:0;width:100%;height:100%}
+  .vignette{position:fixed;inset:0;pointer-events:none;transition:opacity .4s;
+    background:radial-gradient(ellipse at 50% 45%,transparent 50%,rgba(0,0,0,.6) 100%)}
+  .stage{position:fixed;inset:0;display:grid;place-items:center;padding-bottom:9vh;pointer-events:none}
+  svg#hud{width:min(calc(var(--size) * 1vmin),980px);height:min(calc(var(--size) * 1vmin),980px);overflow:visible;pointer-events:none}
+  svg#hud .hit,svg#hud .hitFill,svg#hud .node{pointer-events:all}
+  svg#hud .hit{pointer-events:stroke}
+
+  .spin{transform-box:view-box;transform-origin:0 0}
+  .cw  {animation:rot calc(60s / var(--spd)) linear infinite}
+  .ccw {animation:rot calc(40s / var(--spd)) linear infinite reverse}
+  .cw2 {animation:rot calc(24s / var(--spd)) linear infinite}
+  .ccw2{animation:rot calc(16s / var(--spd)) linear infinite reverse}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  .shape{fill:none;stroke:var(--fg);stroke-dasharray:1;stroke-dashoffset:1;transition:opacity .3s,stroke-width .3s}
+  .run .shape{animation:draw 1.4s var(--ease) forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .d1{animation-delay:.3s!important}.d2{animation-delay:.55s!important}.d3{animation-delay:.8s!important}
+
+  .pop{opacity:0}
+  .run .pop{animation:fadeIn .25s forwards}
+  @keyframes fadeIn{to{opacity:1}}
+
+  /* ---------- hover na elementach ---------- */
+  .hit{fill:none;stroke:transparent}
+  .hitFill{fill:transparent}
+  .hov.hot{animation-play-state:paused}
+  .hov.hot .shape{opacity:1!important;stroke-width:2.2px}
+  .hov.hot .seg{stroke-width:9px}
+  .hov.hot line.pop{stroke:var(--fg)!important}
+  .node{transition:fill .25s,stroke-width .25s}
+  .node.hot{fill:var(--fg)!important;stroke-width:3}
+
+  /* ---------- logo ---------- */
+  #logoStroke{fill:none;stroke:var(--fg);stroke-width:.8;stroke-dasharray:1;stroke-dashoffset:1}
+  .run #logoStroke{animation:draw 2.2s cubic-bezier(.6,0,.3,1) 1.6s forwards}
+  #logoHatch{fill:url(#hatch);opacity:0}
+  .run #logoHatch{animation:hatchIn 2.2s ease 1.8s forwards}
+  @keyframes hatchIn{0%{opacity:0}40%{opacity:.6}100%{opacity:0}}
+  #logoEcho{fill:url(#hatch);opacity:0;transition:opacity .4s var(--ease),transform .5s var(--ease)}
+  .logoHot #logoEcho{opacity:.55;transform:translate(6px,6px)}
+  #logoEcho2{fill:none;stroke:var(--fg);stroke-width:.5;opacity:0;transition:opacity .4s,transform .5s var(--ease)}
+  .logoHot #logoEcho2{opacity:.5;transform:translate(-5px,-5px)}
+  #logoFill{fill:var(--fg);opacity:0}
+  .run #logoFill{animation:fillIn .9s steps(1) 3.6s forwards}
+  @keyframes fillIn{0%{opacity:1}10%{opacity:0}18%{opacity:1}26%{opacity:.15}34%{opacity:1}100%{opacity:1}}
+
+  .slice{fill:var(--fg);opacity:0}
+  .run .slice{animation:slice 6s steps(1) 4.6s infinite}
+  .run .slice.s2{animation-name:slice2}
+  @keyframes slice{0%{opacity:1;transform:translateX(-6px)}2%{transform:translateX(5px)}4%{opacity:0;transform:none}100%{opacity:0}}
+  @keyframes slice2{0%{opacity:0}61%{opacity:1;transform:translateX(7px)}63%{transform:translateX(-3px)}65%{opacity:0;transform:none}100%{opacity:0}}
+  .burst .slice{animation:burst .45s steps(1) 1!important}
+  .burst .slice.s2{animation:burst2 .45s steps(1) 1!important}
+  @keyframes burst{0%{opacity:1;transform:translateX(-9px)}30%{transform:translateX(6px)}60%{transform:translateX(-3px)}100%{opacity:0}}
+  @keyframes burst2{0%{opacity:1;transform:translateX(8px)}40%{transform:translateX(-7px)}70%{transform:translateX(3px)}100%{opacity:0}}
+
+  #scanBar{opacity:0}
+  .run #scanBar{animation:scan 2.2s ease-in-out 1.6s 1 forwards}
+  @keyframes scan{0%{opacity:0;transform:translateY(-140px)}10%{opacity:1}90%{opacity:1}100%{opacity:0;transform:translateY(140px)}}
+
+  .lock{fill:none;stroke:var(--fg);stroke-width:2;opacity:0}
+  .run .lock{animation:lock 1s var(--ease) 3.3s forwards}
+  @keyframes lock{0%{opacity:0;transform:scale(2.2) rotate(-90deg)}60%{opacity:1}100%{opacity:1;transform:none}}
+  .lockWrap{transition:transform .5s var(--ease)}
+  .logoHot .lockWrap{transform:scale(1.08)}
+  .tag rect{fill:var(--fg)}
+  .tag text{fill:var(--bg);font-family:var(--mono);font-size:10px;letter-spacing:2px;font-weight:500}
+  .tag{opacity:0}
+  .run .tag{animation:blinkIn .6s linear 4.1s forwards}
+  @keyframes blinkIn{0%,24%{opacity:0}25%,49%{opacity:1}50%,74%{opacity:0}75%,100%{opacity:1}}
+
+  .pulse{fill:none;stroke:var(--fg);opacity:0;transform-box:view-box;transform-origin:0 0}
+  .run .pulse{animation:pulse 1.8s ease-out 3.7s forwards}
+  .run .pulse.p2{animation-delay:4s}
+  .run .pulse.again{animation:pulse 1.4s ease-out forwards}
+  @keyframes pulse{0%{opacity:.9;transform:scale(.4) rotate(0);stroke-width:3}100%{opacity:0;transform:scale(1.7) rotate(30deg);stroke-width:.4}}
+
+  /* ---------- kursor ---------- */
+  .cur{position:fixed;left:0;top:0;width:24px;height:24px;border:1px solid #fff;pointer-events:none;z-index:1000;
+    transition:width .3s var(--ease),height .3s var(--ease),border-width .2s;mix-blend-mode:difference}
+  .cur::before,.cur::after{content:"";position:absolute;background:#fff}
+  .cur::before{left:50%;top:-7px;width:1px;height:5px}
+  .cur::after{top:50%;left:-7px;height:1px;width:5px}
+  .cur.hot{width:52px;height:52px;border-width:2px}
+  .cur.down{width:14px;height:14px}
+  .cdot{position:fixed;left:0;top:0;width:4px;height:4px;background:#fff;pointer-events:none;z-index:1001;mix-blend-mode:difference}
+  .ccoord{position:fixed;left:0;top:0;font-size:9px;letter-spacing:.12em;color:var(--dim);pointer-events:none;z-index:1000;white-space:nowrap;transition:opacity .2s}
+
+  .tip{position:fixed;left:0;top:0;pointer-events:none;z-index:49;opacity:0;transform:translateY(6px);
+    transition:opacity .2s,transform .3s var(--ease);font-size:10px;letter-spacing:.14em;min-width:180px}
+  .tip.on{opacity:1;transform:none}
+  .tip .h{background:var(--fg);color:var(--bg);padding:5px 9px;font-weight:500;display:flex;justify-content:space-between;gap:14px}
+  .tip .b{border:1px solid #444;border-top:0;background:rgba(27,27,27,.9);padding:7px 9px;color:var(--mid);line-height:1.7}
+  .tip .b b{color:var(--fg);font-weight:400}
+
+  /* ---------- UI ---------- */
+  .title{position:fixed;left:50%;bottom:6vh;transform:translateX(-50%);text-align:center;white-space:nowrap}
+  .title h1{font-family:var(--cond);font-weight:800;font-size:clamp(34px,6vmin,68px);letter-spacing:.18em;line-height:1;min-height:1em;padding-left:.18em;transition:letter-spacing .6s var(--ease)}
+  .title h1:hover{letter-spacing:.26em}
+  .title h1 .o{color:transparent;-webkit-text-stroke:1.5px var(--fg);transition:color .35s}
+  .title h1:hover .o{color:var(--fg)}
+  .title p{margin-top:.9em;font-size:clamp(10px,1.3vmin,12px);letter-spacing:.45em;color:var(--mid);min-height:1.4em}
+  .cursor::after{content:"▌";animation:blink .8s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  .panel{position:fixed;font-size:11px;line-height:1.7;letter-spacing:.14em;color:var(--dim)}
+  .panel b{color:var(--fg);font-weight:400;transition:color .2s}
+  .tl{top:36px;left:40px}
+  .tr{top:36px;right:40px;text-align:right}
+  .bl{bottom:36px;left:40px}
+  .br{bottom:36px;right:40px;text-align:right}
+  .panel .row{opacity:0;transition:opacity .3s,background .2s,color .2s,padding .3s var(--ease);padding:0 4px}
+  .panel .row.on{opacity:1}
+  .panel .row:hover{background:var(--fg);color:var(--bg)}
+  .panel .row:hover b{color:var(--bg)}
+  .tl .row:hover,.bl .row:hover{padding-left:14px}
+  .tr .row:hover,.br .row:hover{padding-right:14px}
+  .bar{display:inline-block;width:110px;height:7px;vertical-align:middle;margin-left:8px;
+    background:repeating-linear-gradient(90deg,#3a3a3a 0 5px,transparent 5px 7px);position:relative}
+  .bar i{position:absolute;inset:0 auto 0 0;width:0;color:var(--fg);
+    background:repeating-linear-gradient(90deg,currentColor 0 5px,transparent 5px 7px)}
+  .row:hover .bar i{color:var(--bg)}
+  .sq{display:inline-block;width:7px;height:7px;border:1px solid var(--fg);margin-right:8px;vertical-align:middle}
+  .sq.f{background:var(--fg)}
+  .row:hover .sq{border-color:var(--bg)}
+  .row:hover .sq.f{background:var(--bg)}
+
+  .frame{position:fixed;inset:16px;pointer-events:none;border:1px solid var(--line);opacity:0}
+  .run .frame{animation:fadeIn .6s .05s forwards}
+  .corner{position:fixed;width:22px;height:22px;border:0 solid var(--fg);opacity:0;pointer-events:none}
+  .run .corner{animation:fadeIn .3s .2s forwards}
+  .corner.a{top:16px;left:16px;border-top-width:3px;border-left-width:3px}
+  .corner.b{top:16px;right:16px;border-top-width:3px;border-right-width:3px}
+  .corner.c{bottom:16px;left:16px;border-bottom-width:3px;border-left-width:3px}
+  .corner.d{bottom:16px;right:16px;border-bottom-width:3px;border-right-width:3px}
+
+  .hint{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:.3em;color:#4a4a4a;pointer-events:none;white-space:nowrap}
+
+
+  /* ---------- panel konfiguracji ---------- */
+  .cfgBtn{position:fixed;top:28px;left:50%;transform:translateX(-50%);z-index:61;font:500 10px var(--mono);letter-spacing:.3em;
+    color:var(--mid);background:var(--bg);border:1px solid var(--dim);padding:7px 14px 7px 16px;cursor:none;transition:.25s}
+  .cfgBtn:hover,.cfgBtn.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+  .cfg{position:fixed;top:16px;right:16px;bottom:16px;width:320px;z-index:60;background:var(--bg);border:1px solid var(--dim);
+    transform:translateX(calc(100% + 40px));transition:transform .55s var(--ease);overflow-y:auto;overflow-x:hidden;
+    font-size:10px;letter-spacing:.14em;color:var(--mid);scrollbar-width:thin;scrollbar-color:var(--dim) transparent}
+  .cfg.open{transform:none}
+  .cfg *{cursor:none}
+  .cfg .hd{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--fg);color:var(--bg);font-weight:500;position:sticky;top:0;z-index:2}
+  .cfg .hd button{all:unset;font-size:14px;line-height:1;padding:0 2px}
+  .cfg h4{font-weight:500;font-size:10px;letter-spacing:.3em;color:var(--fg);padding:16px 16px 8px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center}
+  .cfg h4::before{content:"";width:6px;height:6px;background:var(--fg);transform:rotate(45deg)}
+  .cfg .grid2{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;padding:0 16px 14px}
+  .cfg label.tg{display:flex;align-items:center;gap:9px;padding:5px 0;transition:color .2s}
+  .cfg label.tg:hover{color:var(--fg)}
+  .cfg input[type=checkbox]{appearance:none;width:11px;height:11px;border:1px solid var(--mid);margin:0;flex:none;position:relative;transition:.2s}
+  .cfg input[type=checkbox]:checked{background:var(--fg);border-color:var(--fg)}
+  .cfg input[type=checkbox]:checked::after{content:"";position:absolute;inset:2px;background:var(--bg)}
+  .cfg .rg{padding:6px 16px 8px}
+  .cfg .rg .top{display:flex;justify-content:space-between;margin-bottom:7px}
+  .cfg .rg .top b{color:var(--fg);font-weight:400}
+  .cfg input[type=range]{appearance:none;width:100%;height:12px;background:transparent;margin:0}
+  .cfg input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--dim)}
+  .cfg input[type=range]::-moz-range-track{height:1px;background:var(--dim)}
+  .cfg input[type=range]::-webkit-slider-thumb{appearance:none;width:10px;height:10px;background:var(--fg);margin-top:-4.5px;transform:rotate(45deg)}
+  .cfg input[type=range]::-moz-range-thumb{width:10px;height:10px;background:var(--fg);border:0;border-radius:0;transform:rotate(45deg)}
+  .cfg .row2{display:flex;align-items:center;justify-content:space-between;padding:6px 16px}
+  .cfg input[type=color]{appearance:none;width:44px;height:20px;border:1px solid var(--dim);padding:0;background:none}
+  .cfg input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+  .cfg input[type=color]::-webkit-color-swatch{border:0}
+  .cfg .presets{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px 16px 14px}
+  .cfg .presets button,.cfg .acts button{all:unset;text-align:center;border:1px solid var(--dim);padding:7px 0;color:var(--mid);transition:.2s;font-size:9px;letter-spacing:.18em}
+  .cfg .presets button i{display:block;height:6px;margin:0 8px 6px}
+  .cfg .presets button:hover,.cfg .acts button:hover{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+  .cfg .tx{padding:6px 16px}
+  .cfg .tx span{display:block;margin-bottom:6px}
+  .cfg input[type=text]{width:100%;background:transparent;border:0;border-bottom:1px solid var(--dim);color:var(--fg);
+    font:12px var(--mono);letter-spacing:.12em;padding:5px 0;outline:none}
+  .cfg input[type=text]:focus{border-color:var(--fg)}
+  .cfg .acts{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 16px 18px}
+  .cfg .acts button.wide{grid-column:span 2;background:var(--fg);color:var(--bg);border-color:var(--fg)}
+  .cfg .acts button.wide:hover{background:transparent;color:var(--fg)}
+  .cfg .foot{padding:10px 16px 16px;color:var(--dim);font-size:9px;border-top:1px solid var(--line);line-height:1.7}
+
+  @media (max-width:640px){.tr,.bl{display:none}.panel{font-size:9px}}
+
+  .cfgBtn,.cfg .hd button,.cfg .acts button,.cfg .presets button{min-height:44px;cursor:pointer}
+  .cfg{width:min(320px,calc(100% - 32px))}
+  .cfg label.tg{min-height:36px}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--fg);outline-offset:4px}
+  @media(max-width:640px){.tl{top:24px;left:24px;font-size:8px;letter-spacing:.04em}.br{right:24px;bottom:56px;font-size:8px}.cfgBtn{top:auto;bottom:14px}.hint{display:none}.title{bottom:19vh;max-width:90%;white-space:normal}.title h1{font-size:clamp(24px,7vw,42px);letter-spacing:.1em}.title p{font-size:9px;letter-spacing:.16em}.stage{padding-bottom:12vh}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.shape,#logoStroke{stroke-dashoffset:0!important}.pop,.lock,.tag,.frame,.corner,#logoFill{opacity:1!important}.slice,.pulse,#scanBar,#logoHatch,.cursor::after{display:none!important}}
+
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<div class="stage">
+<svg id="hud" viewBox="-400 -400 800 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="hatch" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(60)">
+      <rect width="1" height="3" fill="#f2f2f2"/>
+    </pattern>
+    <linearGradient id="scanGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2f2f2" stop-opacity="0"/>
+      <stop offset=".85" stop-color="#f2f2f2" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity=".9"/>
+    </linearGradient>
+    <path id="logoPath" d="M0 0 64 110 80 83 96 110 120 69 143 110 159 110 127 55 159 0 143 0 96 83 88 69 127 0 32 0 64 55 80 28 64 28 56 14 104 14 64 83 16 0z"/>
+    <clipPath id="sl1"><rect x="-10" y="20" width="180" height="14"/></clipPath>
+    <clipPath id="sl2"><rect x="-10" y="70" width="180" height="10"/></clipPath>
+  </defs>
+
+  <!-- warstwy z paralaksą: każda .par przesuwa się wg kursora -->
+  <g class="par" data-d="5"><g class="spin cw hov" id="ticks" data-tip="scale"></g></g>
+  <g class="par" data-d="10"><g class="spin ccw hov" id="hexOuter" data-tip="hex"></g></g>
+  <g class="par" data-d="16"><g class="spin cw2 hov" id="tri" data-tip="tri"></g></g>
+  <g class="par" data-d="22"><g class="spin ccw2 hov" id="segs" data-tip="seg"></g></g>
+
+  <polygon class="pulse" id="pul1"/>
+  <polygon class="pulse p2" id="pul2"/>
+
+  <g class="par" data-d="-6" id="logoLayer">
+    <g transform="translate(-140 -96.25) scale(1.75)">
+      <use id="logoEcho" href="#logoPath"/>
+      <use id="logoEcho2" href="#logoPath"/>
+      <use id="logoHatch" href="#logoPath"/>
+      <use id="logoFill" href="#logoPath"/>
+      <use class="slice" href="#logoPath" clip-path="url(#sl1)"/>
+      <use class="slice s2" href="#logoPath" clip-path="url(#sl2)"/>
+      <path id="logoStroke" pathLength="1" vector-effect="non-scaling-stroke"
+        d="M0 0 64 110 80 83 96 110 120 69 143 110 159 110 127 55 159 0 143 0 96 83 88 69 127 0 32 0 64 55 80 28 64 28 56 14 104 14 64 83 16 0z"/>
+      <rect id="logoHit" class="hitFill" x="-6" y="-6" width="171" height="122" data-tip="logo"/>
+    </g>
+
+    <g id="scanBar">
+      <rect x="-170" y="-34" width="340" height="34" fill="url(#scanGrad)"/>
+      <line x1="-185" x2="185" y1="0" y2="0" stroke="#fff" stroke-width="1"/>
+      <rect x="-189" y="-3" width="6" height="6" fill="#fff"/>
+      <rect x="183" y="-3" width="6" height="6" fill="#fff"/>
+    </g>
+
+    <g class="lockWrap spin">
+      <g class="lock spin">
+        <path d="M-165 -125 h30 M-165 -125 v30 M-165 -125 l12 12"/>
+        <path d="M165 -125 h-30 M165 -125 v30 M165 -125 l-12 12"/>
+        <path d="M-165 125 h30 M-165 125 v-30 M-165 125 l12 -12"/>
+        <path d="M165 125 h-30 M165 125 v-30 M165 125 l-12 -12"/>
+      </g>
+    </g>
+    <g class="tag"><rect x="-165" y="-152" width="132" height="17"/><text x="-158" y="-140">▲ TARGET LOCKED</text></g>
+    <g class="tag"><rect x="61" y="135" width="104" height="17"/><text x="68" y="147">ID WWK-0001</text></g>
+  </g>
+</svg>
+</div>
+
+<div class="vignette"></div>
+<div class="frame"></div>
+<div class="corner a"></div><div class="corner b"></div>
+<div class="corner c"></div><div class="corner d"></div>
+
+<div class="panel tl" id="boot"></div>
+<div class="panel tr">
+  <div class="row" data-t="900">SYS.TIME <b id="clock">00:00:00</b></div>
+  <div class="row" data-t="1100">FRAME <b id="frame">000000</b></div>
+  <div class="row" data-t="1300">LAT <b id="lat">52.2297</b> LON <b id="lon">21.0122</b></div>
+  <div class="row" data-t="1500">SIGNAL <span class="bar"><i id="sig"></i></span></div>
+</div>
+<div class="panel bl">
+  <div class="row" data-t="2000"><span class="sq f"></span>GEOMETRY <b>60° / HEX</b></div>
+  <div class="row" data-t="2200"><span class="sq" id="nodeSq"></span>NODES <b id="nodes">0</b>/128</div>
+  <div class="row" data-t="2400"><span class="sq"></span>RENDER <span class="bar"><i id="render"></i></span></div>
+</div>
+<div class="panel br">
+  <div class="row" data-t="2600">MODE <b>MONO / VECTOR</b></div>
+  <div class="row" data-t="2800">CURSOR <b id="hex">X0000 Y0000</b></div>
+  <div class="row" data-t="3000">STATUS <b id="status">CALIBRATING</b></div>
+</div>
+
+<div class="title">
+  <h1 id="title"></h1>
+  <p id="sub"></p>
+</div>
+<button class="cfgBtn" id="cfgBtn" aria-controls="cfg" aria-expanded="false">■ CONFIG [C]</button>
+<aside class="cfg" id="cfg"></aside>
+<div class="hint">CLICK LOGO TO REPLAY · CLICK BACKGROUND TO PULSE</div>
+
+<div class="tip" id="tip"><div class="h"><span id="tipH"></span><span id="tipN"></span></div><div class="b" id="tipB"></div></div>
+<div class="cur" id="cur"></div>
+<div class="cdot" id="cdot"></div>
+<div class="ccoord" id="ccoord"></div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const body = document.body;
+  const $ = id => document.getElementById(id);
+
+  /* ---------- konfiguracja (stan) ---------- */
+  const DEF = {
+    ticks:true, hex:true, tri:true, segs:true, lock:true, logoAnim:true,
+    panels:true, titleOn:true, frame:true, hint:true, vignette:true,
+    grid:true, dots:true, links:true, radar:true, particles:true,
+    glitch:true, cursor:true, tips:true, parallax:true,
+    spd:1, par:1, size:80, count:36, gridSize:56, reach:170, glow:1,
+    fg:"#f2f2f2", bg:"#1b1b1b",
+    title:"WOWK DIGITAL X", sub:"SYSTEM ONLINE // GEOMETRY LOCKED"
+  };
+  const STORE = "wowkHudGeoCfg";
+  let C = {...DEF};
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  if (matchMedia('(max-width: 640px)').matches) { C.count = 16; C.size = 72; C.reach = 100; }
+  if (reduceMotion.matches) Object.assign(C, {glitch:false, parallax:false, particles:false, radar:false, cursor:false});
+  
+  const hex2rgb = h => { h = h.replace("#", ""); if (h.length === 3) h = [...h].map(c => c + c).join("");
+    return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); };
+  C.rgb = hex2rgb(C.fg).join(",");
+  const esc = t => t.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const titleHTML = t => { const i = t.indexOf(" ");
+    return i < 0 ? esc(t) : esc(t.slice(0, i)) + ' <span class="o">' + esc(t.slice(i + 1)) + "</span>"; };
+  const el = (tag, attrs = {}, parent) => {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    parent && parent.appendChild(e);
+    return e;
+  };
+  const poly = (n, r, rot = 0) => Array.from({length:n}, (_, i) => {
+    const a = rot * Math.PI / 180 + i / n * Math.PI * 2 - Math.PI / 2;
+    return [Math.cos(a) * r, Math.sin(a) * r];
+  });
+  const pts = arr => arr.map(p => p.map(v => v.toFixed(2)).join(",")).join(" ");
+
+  /* ---------- skala ---------- */
+  const ticks = $("ticks");
+  el("circle", {r:342, class:"hit", "stroke-width":30}, ticks);
+  for (let i = 0; i < 120; i++) {
+    const a = i / 120 * Math.PI * 2;
+    const long = i % 10 === 0, mid = i % 5 === 0;
+    const r1 = 332, r2 = long ? 352 : mid ? 344 : 338;
+    const l = el("line", {x1:Math.cos(a)*r1, y1:Math.sin(a)*r1, x2:Math.cos(a)*r2, y2:Math.sin(a)*r2,
+      stroke: long ? "#f2f2f2" : "#555", "stroke-width": long ? 2 : 1, class:"pop"}, ticks);
+    l.style.animationDelay = (.25 + i * .008) + "s";
+    if (long) {
+      const t = el("text", {x:Math.cos(a)*368, y:Math.sin(a)*368 + 3.5, "text-anchor":"middle", "font-size":9, fill:"#777",
+        "font-family":"JetBrains Mono, monospace", class:"pop"}, ticks);
+      t.style.animationDelay = (.25 + i * .008) + "s";
+      t.textContent = String(i * 3).padStart(3, "0");
+    }
+  }
+
+  /* ---------- sześciokąt ---------- */
+  const hexO = $("hexOuter"), HP = poly(6, 305, 30);
+  el("polygon", {points:pts(HP), class:"hit", "stroke-width":18}, hexO);
+  el("polygon", {points:pts(HP), class:"shape d1", pathLength:1, "stroke-width":1, opacity:.45}, hexO);
+  HP.forEach(([x, y], i) => {
+    const r = el("rect", {x:x-5, y:y-5, width:10, height:10, fill:"#1b1b1b", stroke:"#f2f2f2", "stroke-width":1.2,
+      class:"pop node", transform:`rotate(45 ${x} ${y})`, "data-tip":"node", "data-i":i}, hexO);
+    r.style.animationDelay = (1 + i * .08) + "s";
+  });
+
+  /* ---------- trójkąt ---------- */
+  const tri = $("tri"), TP = poly(3, 268, 180);
+  el("polygon", {points:pts(TP), class:"hit", "stroke-width":18}, tri);
+  el("polygon", {points:pts(TP), class:"shape d2", pathLength:1, "stroke-width":1, opacity:.6}, tri);
+  TP.forEach(([x, y], i) => {
+    const p = el("polygon", {points:pts(poly(3, 8, 180).map(([a, b]) => [a + x, b + y])), fill:"#f2f2f2", class:"pop"}, tri);
+    p.style.animationDelay = (1.3 + i * .1) + "s";
+  });
+
+  /* ---------- 3 grube segmenty ---------- */
+  const segs = $("segs"), SP = poly(12, 236, 15);
+  [0, 4, 8].forEach(i => {
+    const a = SP[i], b = SP[i + 1];
+    el("line", {x1:a[0], y1:a[1], x2:b[0], y2:b[1], class:"hit", "stroke-width":24}, segs);
+    el("line", {x1:a[0], y1:a[1], x2:b[0], y2:b[1], class:"shape seg d3", pathLength:1, "stroke-width":5}, segs);
+  });
+
+  ["pul1","pul2"].forEach(id => $(id).setAttribute("points", pts(poly(6, 190, 30))));
+
+  /* ---------- tooltipy ---------- */
+  const rotOf = g => {
+    const m = getComputedStyle(g).transform;
+    if (!m || m === "none") return 0;
+    const [a, b] = m.match(/-?[\d.e]+/g).map(Number);
+    return ((Math.atan2(b, a) * 180 / Math.PI) + 360) % 360;
+  };
+  const TIPS = {
+    scale:g => ["SCALE", "01", `DIV <b>120</b><br>R <b>332–352</b><br>ROT <b>${rotOf(g).toFixed(1)}°</b> · PAUSED`],
+    hex:  g => ["HEXAGON", "02", `SIDES <b>6</b><br>R <b>305</b><br>ROT <b>${rotOf(g).toFixed(1)}°</b> · PAUSED`],
+    tri:  g => ["TRIANGLE", "03", `ANGLES <b>60° · 60° · 60°</b><br>= LOGO AXIS<br>ROT <b>${rotOf(g).toFixed(1)}°</b> · PAUSED`],
+    seg:  g => ["SEGMENTS", "04", `COUNT <b>3</b> / 12<br>R <b>236</b><br>ROT <b>${rotOf(g).toFixed(1)}°</b> · PAUSED`],
+    node: n => { const i = +n.dataset.i, [x, y] = HP[i];
+      return [`NODE ${String(i + 1).padStart(2, "0")}`, "◆", `X <b>${x.toFixed(0)}</b> Y <b>${y.toFixed(0)}</b><br>HEX VERTEX`]; },
+    logo: () => ["WX MARK", "■", `VERTICES <b>21</b><br>GRID <b>160 × 110 U</b><br>CLICK <b>↻ REPLAY</b>`]
+  };
+
+  /* ---------- kursor + hover ---------- */
+  const cur = $("cur"), cdot = $("cdot"), ccoord = $("ccoord"), tip = $("tip"), svg = $("hud");
+  let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my, hotEl = null;
+  let px = 0, py = 0, overCfg = false;
+  function setHot(target) {
+    if (target === hotEl) return;
+    if (hotEl) hotEl.classList.remove("hot");
+    svg.classList.remove("logoHot");
+    hotEl = target;
+    cur.classList.toggle("hot", !!target);
+    tip.classList.toggle("on", !!target && C.tips);
+    if (!target) return;
+    // węzeł podświetla też cały sześciokąt
+    target.classList.add("hot");
+    if (target.dataset.tip === "logo") {
+      svg.classList.add("logoHot");
+      if (C.glitch) svg.classList.remove("burst"); void svg.getBoundingClientRect(); svg.classList.add("burst");
+      setTimeout(() => svg.classList.remove("burst"), 460);
+    }
+  }
+  addEventListener("pointermove", e => {
+    mx = e.clientX; my = e.clientY;
+    overCfg = !!(e.target.closest && e.target.closest(".cfg, .cfgBtn"));
+    const t = e.target.closest && e.target.closest("[data-tip]");
+    setHot(t || null);
+  });
+  addEventListener("pointerdown", () => cur.classList.add("down"));
+  addEventListener("pointerup", () => cur.classList.remove("down"));
+  document.addEventListener("mouseleave", () => setHot(null));
+
+  /* ---------- canvas ---------- */
+  const cv = $("bg"), ctx = cv.getContext("2d");
+  let W, H, DPR, parts = [], ripples = [];
+  function resize() {
+    DPR = Math.min(devicePixelRatio || 1, 2);
+    W = cv.width = innerWidth * DPR; H = cv.height = innerHeight * DPR;
+    makeParts();
+  }
+  function makeParts() {
+    parts = Array.from({length:C.count}, () => ({
+      x:Math.random() * W, y:Math.random() * H, v:(Math.random() * .3 + .06) * DPR,
+      s:(Math.random() * 3 + 2) * DPR, o:Math.random(), tri:Math.random() < .5, r:Math.random() * 6
+    }));
+  }
+  addEventListener("resize", resize); resize();
+
+  const hexPath = (x, y, r, rot = 0) => {
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const a = rot + i / 6 * Math.PI * 2;
+      ctx[i ? "lineTo" : "moveTo"](x + Math.cos(a) * r, y + Math.sin(a) * r);
+    }
+    ctx.closePath();
+  };
+
+  let t0 = performance.now();
+  function drawBg(now) {
+    const t = (now - t0) / 1000;
+    ctx.clearRect(0, 0, W, H);
+    const cx = W / 2, cy = H * .455, R = Math.min(W, H) * .46 * (C.size / 80);
+    const appear = Math.min(1, t / 1.2);
+    const cmx = mx * DPR, cmy = my * DPR;
+
+    // siatka trójkątna
+    const s = C.gridSize * DPR, h = s * Math.sin(Math.PI / 3), k = Math.tan(Math.PI / 3);
+    ctx.strokeStyle = `rgba(${C.rgb},${.025 * appear * C.glow * (C.grid ? 1 : 0)})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let y = cy % h - h; y < H + h; y += h) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+    for (let x = -H; x < W + H; x += s) {
+      const x0 = x + (cx % s);
+      ctx.moveTo(x0, 0); ctx.lineTo(x0 + H / k, H);
+      ctx.moveTo(x0, 0); ctx.lineTo(x0 - H / k, H);
+    }
+    ctx.stroke();
+
+    // węzły: rozjaśniają się przy kursorze
+    const near = [];
+    let row = 0;
+    for (let y = cy % h - h; y < H + h; y += h, row++) {
+      const off = (row % 2) * s / 2 + (cx % s);
+      for (let x = off - s; x < W + s; x += s) {
+        const d = Math.hypot(x - cmx, y - cmy), f = C.reach ? Math.max(0, 1 - d / (C.reach * DPR)) : 0;
+        if (!C.dots && !f) continue;
+        const a = ((C.dots ? .09 * C.glow : 0) + f * .8) * appear, sz = (2 + f * 3) * DPR;
+        ctx.fillStyle = `rgba(${C.rgb},${a})`;
+        ctx.fillRect(x - sz / 2, y - sz / 2, sz, sz);
+        if (f > .45 && C.links) near.push([x, y, f]);
+      }
+    }
+    ctx.lineWidth = DPR;
+    near.forEach(([x, y, f]) => {
+      ctx.strokeStyle = `rgba(${C.rgb},${(f - .45) * .6 * appear})`;
+      ctx.beginPath(); ctx.moveTo(cmx, cmy); ctx.lineTo(x, y); ctx.stroke();
+    });
+
+    // radar (subtelny)
+    if (C.radar && t > .8 && ctx.createConicGradient) {
+      const g = ctx.createConicGradient(t - Math.PI * .5, cx, cy);
+      g.addColorStop(0, `rgba(${C.rgb},0)`);
+      g.addColorStop(.9, `rgba(${C.rgb},0)`);
+      g.addColorStop(1, `rgba(${C.rgb},${.06 * C.glow})`);
+      ctx.fillStyle = g;
+      hexPath(cx, cy, R * .56); ctx.fill();
+    }
+
+    // impulsy po kliknięciu
+    ripples = ripples.filter(r => now - r.t < 1200);
+    ripples.forEach(r => {
+      const p = (now - r.t) / 1200, e = 1 - Math.pow(1 - p, 3);
+      ctx.strokeStyle = `rgba(${C.rgb},${(1 - p) * .8})`;
+      ctx.lineWidth = (2 - p * 1.5) * DPR;
+      hexPath(r.x, r.y, e * 140 * DPR, p * .5); ctx.stroke();
+      hexPath(r.x, r.y, e * 80 * DPR, -p * .5); ctx.stroke();
+    });
+
+    // cząsteczki
+    if (C.particles) for (const p of parts) {
+      p.y -= p.v; p.r += .005;
+      if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+      const al = (.06 + .18 * Math.abs(Math.sin(t * .8 + p.o * 6))) * appear;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
+      ctx.strokeStyle = `rgba(${C.rgb},${al})`;
+      ctx.beginPath();
+      if (p.tri) { ctx.moveTo(0, -p.s); ctx.lineTo(p.s * .87, p.s * .5); ctx.lineTo(-p.s * .87, p.s * .5); ctx.closePath(); }
+      else ctx.rect(-p.s / 2, -p.s / 2, p.s, p.s);
+      ctx.stroke(); ctx.restore();
+    }
+  }
+
+  /* ---------- teksty ---------- */
+  const bootLines = [
+    "▲ WOWK_OS v4.2.1",
+    "■ INIT KERNEL ........ <b>OK</b>",
+    "■ BUILD HEX LATTICE .. <b>OK</b>",
+    "■ LOAD VECTOR CORE ... <b>OK</b>",
+    "■ ALIGN 60° AXES ..... <b>OK</b>",
+    "■ TRACE LOGO MESH .... <b>OK</b>",
+    "▲ IDENTITY ........... <b>VERIFIED</b>"
+  ];
+  let timers = [];
+  const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+  function typeText(elm, str, speed, cb, html) {
+    elm.textContent = ""; elm.classList.add("cursor");
+    let i = 0;
+    const step = () => {
+      const scramble = i < str.length ? "▲■◆▼◢◣/#"[Math.random() * 8 | 0] : "";
+      elm.textContent = str.slice(0, i) + scramble;
+      if (i++ <= str.length) later(step, speed);
+      else { elm.classList.remove("cursor"); if (html) elm.innerHTML = html; cb && cb(); }
+    };
+    step();
+  }
+
+  function start() {
+    timers.forEach(clearTimeout); timers = [];
+    body.classList.remove("run"); void body.offsetWidth; body.classList.add("run");
+    t0 = performance.now();
+    if (reduceMotion.matches) {
+      t0 -= 8000;
+      $("boot").innerHTML = '<div class="row on">▲ WOWK DIGITAL X / READY</div>';
+      document.querySelectorAll('.panel .row').forEach(r => r.classList.add('on'));
+      $("status").textContent = "ONLINE";
+      $("title").innerHTML = titleHTML(C.title); $("sub").textContent = C.sub;
+      body.dataset.done = 1;
+      requestAnimationFrame(drawBg);
+      return;
+    }
+    const boot = $("boot"); boot.innerHTML = "";
+    bootLines.forEach((l, i) => later(() => {
+      const d = document.createElement("div"); d.className = "row on"; d.innerHTML = l; boot.appendChild(d);
+    }, 150 + i * 520));
+    document.querySelectorAll(".panel .row[data-t]").forEach(r => {
+      r.classList.remove("on"); later(() => r.classList.add("on"), +r.dataset.t);
+    });
+    $("status").textContent = "CALIBRATING";
+    $("title").textContent = ""; $("sub").textContent = "";
+    later(() => { $("status").textContent = "ONLINE"; }, 4200);
+    delete body.dataset.done; later(() => body.dataset.done = 1, 4300);
+    later(() => typeText($("title"), C.title, 70, () =>
+      typeText($("sub"), C.sub, 25),
+      titleHTML(C.title)), 4300);
+  }
+
+  /* ---------- kliknięcia ---------- */
+  addEventListener("click", e => {
+    if (e.target.closest(".cfg, .cfgBtn")) return;
+    if (e.target.closest("#logoHit")) { start(); return; }
+    ripples.push({x:e.clientX * DPR, y:e.clientY * DPR, t:performance.now()});
+    if (e.target.closest("[data-tip]")) {
+      ["pul1","pul2"].forEach((id, i) => {
+        const p = $(id); p.classList.remove("again"); void p.getBoundingClientRect();
+        p.style.animationDelay = (i * .2) + "s"; p.classList.add("again");
+      });
+    }
+  });
+
+  /* ---------- pętla ---------- */
+  const pars = [...document.querySelectorAll(".par")];
+  let frame = 0;
+  function loop(now) {
+    if (document.hidden) { requestAnimationFrame(loop); return; }
+    drawBg(now);
+    const t = (now - t0) / 1000;
+    frame++;
+
+    rx += (mx - rx) * .2; ry += (my - ry) * .2;
+    cur.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%) rotate(${hotEl ? 45 : 0}deg)`;
+    cdot.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
+    ccoord.style.transform = `translate(${mx + 16}px,${my + 14}px)`;
+    ccoord.textContent = `${String(Math.round(mx)).padStart(4,"0")} · ${String(Math.round(my)).padStart(4,"0")}`;
+    ccoord.style.opacity = (hotEl || overCfg) ? 0 : 1;
+    if (hotEl) {
+      const [h, n, b] = TIPS[hotEl.dataset.tip](hotEl);
+      $("tipH").textContent = h; $("tipN").textContent = n; $("tipB").innerHTML = b;
+      const tx = mx + 40 + 200 > innerWidth ? mx - 230 : mx + 40;
+      tip.style.left = tx + "px"; tip.style.top = (my - 20) + "px";
+    }
+
+    // paralaksa
+    const nx = (mx / innerWidth - .5) * 2, ny = (my / innerHeight - .5) * 2;
+    px += (nx - px) * .06; py += (ny - py) * .06;
+    pars.forEach(p => {
+      const d = +p.dataset.d * (C.parallax ? C.par : 0);
+      p.setAttribute("transform", `translate(${(-px * d).toFixed(2)} ${(-py * d).toFixed(2)})`);
+    });
+
+    if (frame % 3 === 0) {
+      $("clock").textContent = new Date().toTimeString().slice(0, 8);
+      $("frame").textContent = String(frame).padStart(6, "0");
+      $("lat").textContent = (52.2297 + Math.sin(t * .7) * .002).toFixed(4);
+      $("lon").textContent = (21.0122 + Math.cos(t * .5) * .002).toFixed(4);
+      $("sig").style.width = (Math.round((65 + Math.sin(t * 3) * 15 + Math.random() * 10) / 6.36) * 6.36) + "%";
+      const n = Math.min(128, Math.floor(Math.max(0, t - 2) * 60));
+      $("nodes").textContent = n;
+      $("nodeSq").classList.toggle("f", n === 128);
+      $("render").style.width = Math.min(100, Math.max(0, (t - 2.2) / 2) * 100) + "%";
+      $("hex").textContent = `X${String(Math.round(mx)).padStart(4,"0")} Y${String(Math.round(my)).padStart(4,"0")}`;
+    }
+    if (!reduceMotion.matches) requestAnimationFrame(loop);
+  }
+
+  /* ---------- przekolorowanie SVG na zmienne CSS ---------- */
+  document.querySelectorAll("#hud *").forEach(n => {
+    const map = {"#f2f2f2":"var(--fg)", "#fff":"var(--fg)", "#ffffff":"var(--fg)", "#1b1b1b":"var(--bg)", "#555":"var(--dim)", "#777":"var(--mid)"};
+    ["fill", "stroke", "stop-color"].forEach(a => {
+      const v = n.getAttribute(a); if (v && map[v.toLowerCase()]) n.style.setProperty(a, map[v.toLowerCase()]);
+    });
+  });
+
+  /* ---------- panel konfiguracji (UI) ---------- */
+  const HIDE = {
+    ticks:"#ticks", hex:"#hexOuter", tri:"#tri", segs:"#segs", lock:".lockWrap, .tag",
+    panels:".panel", titleOn:".title", frame:".frame, .corner", hint:".hint", vignette:".vignette",
+    glitch:".slice", cursor:".cur, .cdot, .ccoord", logoAnim:"#scanBar, .pulse"
+  };
+  const st = document.createElement("style");
+  st.textContent = Object.entries(HIDE).map(([k, sel]) =>
+    sel.split(",").map(x => `body.off-${k} ${x.trim()}`).join(",") + "{display:none!important}").join("\n") +
+    "\nbody.off-cursor, body.off-cursor .cfg *, body.off-cursor .cfgBtn{cursor:auto!important}";
+  document.head.appendChild(st);
+
+  const GROUPS = [
+    ["HUD — ELEMENTS", [["ticks","Scale"],["hex","Hexagon"],["tri","Triangle"],["segs","Segmenty"],["lock","Target lock"],["logoAnim","Scanner / pulse"]]],
+    ["INTERFACE", [["panels","Data panels"],["titleOn","Title"],["frame","Frame"],["hint","Hint"],["vignette","Vignette"]]],
+    ["BACKGROUND", [["grid","60° grid"],["dots","Nodes"],["links","Cursor lines"],["radar","Radar"],["particles","Particles"]]],
+    ["INTERACTION", [["cursor","HUD cursor"],["tips","Labels"],["parallax","Parallax"],["glitch","Glitch"]]]
+  ];
+  const RANGES = [
+    ["spd","Rotation speed",.1,4,.1,v => v.toFixed(1) + "×"],
+    ["size","HUD size",50,100,1,v => v + " vmin"],
+    ["par","Parallax strength",0,3,.1,v => v.toFixed(1) + "×"],
+    ["reach","Cursor reach",0,400,10,v => v + " px"],
+    ["gridSize","Grid spacing",28,120,2,v => v + " px"],
+    ["count","Particle count",0,150,1,v => v],
+    ["glow","Background brightness",0,3,.1,v => v.toFixed(1) + "×"]
+  ];
+  const PRESETS = [["MONO","#f2f2f2","#1b1b1b"],["CYAN","#3ef2ff","#04070b"],["AMBER","#ffb547","#120d06"],["INVERSE","#1b1b1b","#ecebe7"]];
+
+  const cfg = $("cfg"), cfgBtn = $("cfgBtn");
+  let h = `<div class="hd"><span>▲ HUD CONFIG</span><button data-act="close">✕</button></div>`;
+  GROUPS.forEach(([name, items]) => {
+    h += `<h4>${name}</h4><div class="grid2">` +
+      items.map(([k, l]) => `<label class="tg"><input type="checkbox" data-k="${k}">${l.toUpperCase()}</label>`).join("") + `</div>`;
+  });
+  h += `<h4>PARAMETERS</h4>` + RANGES.map(([k, l, mn, mx, stp]) =>
+    `<div class="rg"><div class="top"><span>${l.toUpperCase()}</span><b data-v="${k}"></b></div>
+     <input type="range" data-k="${k}" min="${mn}" max="${mx}" step="${stp}"></div>`).join("");
+  h += `<h4>COLORS</h4>
+    <div class="row2"><span>LINES / ACCENT</span><input type="color" data-k="fg"></div>
+    <div class="row2"><span>BACKGROUND</span><input type="color" data-k="bg"></div>
+    <div class="presets">${PRESETS.map(([n, f, b]) => `<button data-preset="${n}"><i style="background:linear-gradient(90deg,${f} 50%,${b} 50%)"></i>${n}</button>`).join("")}</div>`;
+  h += `<h4>TEXT</h4>
+    <div class="tx"><span>TITLE</span><input type="text" data-k="title" maxlength="28"></div>
+    <div class="tx"><span>SUBTITLE</span><input type="text" data-k="sub" maxlength="48"></div>`;
+  h += `<h4>ACTIONS</h4><div class="acts">
+    <button class="wide" data-act="replay">↻ REPLAY ANIMATION</button>
+    <button data-act="all">SHOW ALL</button><button data-act="min">MINIMAL</button>
+    <button data-act="copy">COPY JSON</button><button data-act="reset">RESET</button></div>
+    <div class="foot">[C] — PANEL &nbsp;·&nbsp; [R] — REPLAY<br>SETTINGS APPLY TO THIS PLAYBACK</div>`;
+  cfg.innerHTML = h;
+
+  const mix = (a, b, t) => "#" + hex2rgb(a).map((v, i) => Math.round(v * t + hex2rgb(b)[i] * (1 - t)).toString(16).padStart(2, "0")).join("");
+  function applyColors() {
+    const r = document.documentElement.style;
+    r.setProperty("--fg", C.fg); r.setProperty("--bg", C.bg);
+    r.setProperty("--mid", mix(C.fg, C.bg, .58)); r.setProperty("--dim", mix(C.fg, C.bg, .32)); r.setProperty("--line", mix(C.fg, C.bg, .14));
+    C.rgb = hex2rgb(C.fg).join(",");
+    const [R, G, B] = hex2rgb(C.bg), light = (R * .299 + G * .587 + B * .114) > 140;
+    document.querySelector(".vignette").style.opacity = light ? .25 : 1;
+  }
+  let partsN = C.count;
+  function apply(save = true) {
+    Object.keys(HIDE).forEach(k => body.classList.toggle("off-" + k, !C[k]));
+    const r = document.documentElement.style;
+    r.setProperty("--spd", C.spd); r.setProperty("--size", C.size);
+    applyColors();
+    if (partsN !== C.count) { partsN = C.count; makeParts(); }
+    if (!C.cursor) setHot(null);
+    // synchronizacja kontrolek
+    cfg.querySelectorAll("[data-k]").forEach(inp => {
+      const k = inp.dataset.k;
+      if (inp.type === "checkbox") inp.checked = !!C[k];
+      else if (document.activeElement !== inp) inp.value = C[k];
+    });
+    RANGES.forEach(([k,,,,, f]) => cfg.querySelector(`[data-v="${k}"]`).textContent = f(+C[k]));
+    
+  }
+
+  cfg.addEventListener("input", e => {
+    const inp = e.target, k = inp.dataset.k; if (!k) return;
+    if (inp.type === "checkbox") C[k] = inp.checked;
+    else if (inp.type === "range") C[k] = +inp.value;
+    else C[k] = inp.value;
+    if (k === "title" && body.dataset.done) $("title").innerHTML = titleHTML(C.title);
+    if (k === "sub" && body.dataset.done) $("sub").textContent = C.sub;
+    apply();
+  });
+  cfg.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.preset) { const p = PRESETS.find(x => x[0] === b.dataset.preset); C.fg = p[1]; C.bg = p[2]; apply(); return; }
+    const a = b.dataset.act;
+    if (a === "close") toggleCfg(false);
+    if (a === "replay") start();
+    if (a === "reset") { C = {...DEF}; apply(); start(); }
+    if (a === "all") { GROUPS.forEach(([, it]) => it.forEach(([k]) => C[k] = true)); apply(); }
+    if (a === "min") {
+      Object.assign(C, {ticks:true, hex:false, tri:true, segs:false, lock:false, logoAnim:true, panels:false, titleOn:true,
+        frame:false, hint:false, grid:false, dots:true, links:false, radar:false, particles:false, glitch:false});
+      apply();
+    }
+    if (a === "copy") {
+      const o = {...C}; delete o.rgb;
+      const txt = JSON.stringify(o, null, 2);
+      (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(
+        () => { b.textContent = "COPIED ✓"; setTimeout(() => b.textContent = "COPY JSON", 1400); },
+        () => { b.textContent = "UNAVAILABLE"; setTimeout(() => b.textContent = "COPY JSON", 1400); });
+    }
+  });
+  function toggleCfg(force) {
+    const open = typeof force === "boolean" ? force : !cfg.classList.contains("open");
+    cfg.classList.toggle("open", open); cfgBtn.classList.toggle("on", open); cfgBtn.setAttribute("aria-expanded", String(open)); cfg.inert = !open;
+  }
+  cfgBtn.addEventListener("click", () => toggleCfg());
+  addEventListener("keydown", e => {
+    if (e.target.matches("input[type=text]")) return;
+    if (e.key === "c" || e.key === "C") toggleCfg();
+    if (e.key === "r" || e.key === "R") start();
+    if (e.key === "Escape") {
+      if (cfg.classList.contains("open")) toggleCfg(false);
+      else parent.postMessage({type:'wowk-intro-close'}, '*');
+    }
+  });
+  toggleCfg(false);
+  apply(false);
+
+  start();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
