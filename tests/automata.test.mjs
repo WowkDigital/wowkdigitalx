@@ -1,6 +1,6 @@
-const {test}=require('node:test');
-const assert=require('node:assert/strict');
-const {lifeStep,elementaryStep}=require('./automata-core.js');
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { lifeStep, elementaryStep } from '../src/lib/automata-core.js';
 test('A glider advances diagonally after four generations, including across both edges',()=>{
   const w=12,h=12,a=new Uint8Array(w*h);
   const points=[[1,0],[2,1],[0,2],[1,2],[2,2]];

@@ -1,0 +1,33 @@
+{
+  "name": "wowkdigitalx",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.23.4",
+    "npm": ">=9.6.5"
+  },
+  "scripts": {
+    "dev": "astro dev --host 127.0.0.1",
+    "build": "astro build",
+    "preview": "astro preview --host 127.0.0.1",
+    "check": "astro check && node scripts/validate-content.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:build": "node scripts/check-build.mjs",
+    "test:integration": "node scripts/test-content-build.mjs",
+    "verify": "npm run check && npm test && npm run build && npm run test:build"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "7.3.5",
+    "@astrojs/sitemap": "3.7.4",
+    "@tailwindcss/vite": "4.3.4",
+    "astro": "7.4.5",
+    "rehype-sanitize": "6.0.0",
+    "tailwindcss": "4.3.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "typescript": "6.0.3",
+    "yaml": "2.9.1"
+  }
+}

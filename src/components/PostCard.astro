@@ -1,0 +1,16 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { postSlug } from '../lib/content-policy.mjs';
+import { formatDate } from '../lib/journal';
+interface Props { entry: CollectionEntry<'posts'> }
+const { entry } = Astro.props;
+---
+<article class="journal-card">
+  <a href={`/journal/${postSlug(entry)}/`}>
+    {entry.data.cover && <img src={entry.data.cover} alt={entry.data.coverAlt || ''} loading="lazy" decoding="async" />}
+    <p class="eyebrow">{entry.data.type} / <time datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time></p>
+    <h3>{entry.data.title}</h3>
+    <p>{entry.data.description}</p>
+    {entry.data.draft && <span class="draft-badge">DRAFT / LOCAL PREVIEW</span>}
+  </a>
+</article>

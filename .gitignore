@@ -1,5 +1,12 @@
+node_modules/
+dist/
+.astro/
 .env
 .env.*
 !.env.example
+.DS_Store
 *.upload
 _landing_backup_*/
+coverage/
+__pycache__/
+*.pyc
