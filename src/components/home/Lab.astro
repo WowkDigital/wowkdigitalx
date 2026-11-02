@@ -1,0 +1,20 @@
+<section id="lab" data-ruler-label="LAB" class="section section-pad">
+<p class="eyebrow">EXPERIMENTS / INTERACTIVE LAB</p><h2>SIMPLE RULES.<br><span class="muted">ENDLESS POSSIBILITIES.</span></h2>
+<p class="lab-intro">A small playground for big patterns. Explore two cellular automata, change the rules and build something unexpected.</p>
+<div class="lab-tabs" role="tablist" aria-label="Choose an application"><button id="tab-life" role="tab" aria-selected="true" aria-controls="lab-panel" data-automaton="life">GAME OF LIFE</button><button id="tab-one" role="tab" aria-selected="false" aria-controls="lab-panel" tabindex="-1" data-automaton="one">1D AUTOMATA</button></div>
+<div id="lab-panel" role="tabpanel" aria-label="Cellular automata playground" class="lab-layout">
+<div class="lab-surface"><p id="lab-description" class="lab-description">Conway’s Game of Life. A glider travels across a borderless world: opposite edges connect.</p>
+<div class="lab-monitor"><span>GEN <span id="lab-generation">00000</span></span><span>LIVE <span id="lab-population">5</span></span><span id="lab-dimensions">60 × 36</span><span>EDGES / WRAP</span></div>
+<canvas id="lab-canvas" class="lab-canvas" tabindex="0" aria-label="Editable Game of Life board" aria-describedby="lab-help">Interactive cellular automaton. Use the Play, Step and Reset controls; arrow keys move the editing cursor and Space changes a cell.</canvas>
+<div class="lab-actions"><button id="lab-play" class="primary" aria-pressed="true">PAUSE</button><button id="lab-step">STEP</button><button id="lab-reset">RESET</button><button id="lab-random">RANDOM</button><button id="lab-clear">CLEAR</button></div>
+<p id="lab-help" class="lab-help">Draw or erase by dragging or touching the board. Keyboard: arrow keys move; Space toggles a cell.</p><p id="lab-status" class="lab-status" role="status"></p></div>
+<div class="lab-sidebar">
+<label for="lab-size">Grid size <output id="lab-size-value">60 cols</output><input id="lab-size" type="range" min="24" max="120" step="6" value="60"></label>
+<label for="lab-speed">Speed <output id="lab-speed-value">8 / s</output><input id="lab-speed" type="range" min="1" max="30" value="8"></label>
+<label for="lab-density">Random density <output id="lab-density-value">25%</output><input id="lab-density" type="range" min="5" max="80" step="5" value="25"></label>
+<div id="lab-life-pattern"><label for="lab-pattern">Starting pattern<select id="lab-pattern"><option value="glider">Glider</option><option value="blinker">Blinker</option><option value="toad">Toad</option><option value="random">Random field</option></select></label></div>
+<div id="lab-1d-settings" hidden><label for="lab-rule-preset">Rule presets<select id="lab-rule-preset"><option value="30">Rule 30 / Chaos</option><option value="90">Rule 90 / Triangles</option><option value="110" selected>Rule 110 / Complexity</option><option value="184">Rule 184 / Traffic</option><option value="">Custom rule</option></select></label><label for="lab-rule">Rule number / 0–255<input id="lab-rule" type="number" min="0" max="255" step="1" value="110"></label></div>
+<label class="lab-check"><input id="lab-grid" type="checkbox" checked>Show cell grid</label>
+<p class="lab-rules">LIFE / B3 · S23<br>Born with 3 neighbours.<br>Survive with 2 or 3.<br><br>1D / 256 POSSIBLE RULES<br>Three cells determine the next.<br><br>Resize restores the starting pattern. Each application keeps its state when switching.</p>
+</div></div></section>
+<script>import "../../scripts/automata.js";</script>

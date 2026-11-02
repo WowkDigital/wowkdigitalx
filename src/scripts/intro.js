@@ -11,7 +11,7 @@
     frame=document.createElement('iframe');
     frame.title='WOWK DIGITAL X — interactive geometric logo animation';
     frame.setAttribute('sandbox','allow-scripts');
-    frame.src='brand-intro.html';
+    frame.src='/brand-intro.html';
     slot.append(frame);
     try{dialog.showModal();document.body.classList.add('intro-open');enter.focus();}
     catch{frame.remove();frame=null;}
@@ -29,5 +29,5 @@
     if(frame&&event.source===frame.contentWindow&&event.data?.type==='wowk-intro-close')hideIntro();
   });
   // Reduced-motion users enter the content directly and can replay on demand.
-  if(!reduced.matches&&!location.hash)showIntro();
+  if(location.pathname === '/' && !reduced.matches && !location.hash)showIntro();
 })();

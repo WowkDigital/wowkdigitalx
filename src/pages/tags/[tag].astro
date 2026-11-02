@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { journalEntries } from '../../lib/journal';
+import { tagSlug } from '../../lib/content-policy.mjs';
+import type { CollectionEntry } from 'astro:content';
+export async function getStaticPaths() {
+  const entries = await journalEntries();
+  const tags: string[] = [...new Set(entries.flatMap(entry => entry.data.tags))];
+  return tags.map(label => ({params: {tag: tagSlug(label)}, props: {label, entries: entries.filter(entry => entry.data.tags.includes(label))}}));
+}
+interface Props { label: string; entries: CollectionEntry<'posts'>[] }
+const { label, entries } = Astro.props;
+---
+<BaseLayout title={`${label} — Journal — WOWK DIGITAL X`} description={`Notes and articles about ${label}.`}>
+  <section id="topic" data-ruler-label="JOURNAL" class="section section-pad journal-page">
+    <a class="eyebrow journal-back" href="/journal/">BACK TO JOURNAL</a><h1 class="entry-title">{label}</h1>
+    <div class="journal-grid">{entries.map(entry => <PostCard entry={entry} />)}</div>
+  </section>
+</BaseLayout>

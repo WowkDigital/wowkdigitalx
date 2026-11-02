@@ -1,0 +1,97 @@
+media:
+  input: public/images/journal
+  output: /images/journal
+  categories: [image]
+  extensions: [jpg, jpeg, png, webp, avif, gif]
+  rename: safe
+
+content:
+  - name: posts
+    label: Journal
+    type: collection
+    path: src/content/posts
+    format: yaml-frontmatter
+    filename:
+      template: "{year}-{month}-{day}-{primary}.md"
+      field: create
+    view:
+      fields: [title, date, type, draft]
+      primary: title
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: description
+        label: Summary / SEO description
+        type: text
+        required: true
+        description: "A short summary, up to 250 characters."
+      - name: date
+        label: Publication date
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: draft
+        label: Draft — hidden from the public website
+        type: boolean
+        default: true
+      - name: type
+        label: Entry format
+        type: select
+        default: note
+        options:
+          values:
+            - { name: note, label: Short note }
+            - { name: article, label: Article }
+            - { name: gallery, label: Image gallery }
+      - name: slug
+        label: Custom URL (optional)
+        type: string
+        description: "Lowercase words separated by hyphens. Leave blank to use the filename. Keep published URLs stable."
+      - name: cover
+        label: Cover image
+        type: image
+      - name: coverAlt
+        label: Cover image description
+        type: string
+        description: "Required when a cover image is selected. Describe what the image shows."
+      - name: tags
+        label: Topics
+        type: string
+        list: true
+      - name: body
+        label: Entry text
+        type: rich-text
+        options:
+          format: markdown
+          path: public/images/journal
+      - name: gallery
+        label: Gallery images
+        type: object
+        list: true
+        fields:
+          - name: image
+            type: image
+            required: true
+          - name: alt
+            label: Image description
+            type: string
+            required: true
+          - name: caption
+            type: string
+
+  - name: settings
+    label: Site metadata
+    type: file
+    path: src/data/site.json
+    format: json
+    fields:
+      - { name: name, label: Site name, type: string, required: true }
+      - { name: author, label: Author, type: string, required: true }
+      - { name: description, label: Default description, type: text, required: true }

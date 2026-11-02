@@ -1,8 +1,8 @@
+import { lifeStep, elementaryStep } from '../lib/automata-core.js';
 (() => {
   const lab=document.querySelector('#lab');
   const get=id=>lab.querySelector('#'+id);
   const canvas=get('lab-canvas'),ctx=canvas.getContext('2d');
-  const {lifeStep,elementaryStep}=AutomataCore;
   let mode='life',w=60,h=36,cells,row,history=[],generation=0,running=!matchMedia('(prefers-reduced-motion: reduce)').matches,visible=false,raf=0,last=0,elapsed=0,dirty=true,drag=false,paint=1,cursor={x:0,y:0},focused=false;
   let saved={};
   const patterns={glider:[[1,0],[2,1],[0,2],[1,2],[2,2]],blinker:[[0,0],[1,0],[2,0]],toad:[[1,0],[2,0],[3,0],[0,1],[1,1],[2,1]]};

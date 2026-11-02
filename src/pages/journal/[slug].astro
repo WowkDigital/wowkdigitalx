@@ -1,0 +1,24 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { journalEntries, formatDate } from '../../lib/journal';
+import { postSlug, tagSlug, isPublished } from '../../lib/content-policy.mjs';
+export async function getStaticPaths() {
+  return (await journalEntries()).map(entry => ({ params: { slug: postSlug(entry) }, props: { entry } }));
+}
+interface Props { entry: CollectionEntry<'posts'> }
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+<BaseLayout title={`${entry.data.title} — WOWK DIGITAL X`} description={entry.data.description} image={entry.data.cover} imageAlt={entry.data.coverAlt} article published={entry.data.date} noindex={!isPublished(entry.data)}>
+  <article id="entry" data-ruler-label="JOURNAL" class="section section-pad journal-page">
+    <a class="eyebrow journal-back" href="/journal/">BACK TO JOURNAL</a>
+    <p class="eyebrow journal-date">{entry.data.type} / <time datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time></p>
+    {!isPublished(entry.data) && <p class="draft-badge">UNPUBLISHED / LOCAL PREVIEW ONLY</p>}
+    <h1 class="entry-title">{entry.data.title}</h1><p class="entry-description">{entry.data.description}</p>
+    {entry.data.cover && <img class="entry-cover" src={entry.data.cover} alt={entry.data.coverAlt || ''} fetchpriority="high" />}
+    <div class="prose"><Content /></div>
+    {entry.data.gallery.length > 0 && <div class="entry-gallery">{entry.data.gallery.map(item => <figure><img src={item.image} alt={item.alt} loading="lazy" decoding="async" />{item.caption && <figcaption>{item.caption}</figcaption>}</figure>)}</div>}
+    <nav class="journal-tags" aria-label="Entry topics">{entry.data.tags.map(tag => <a href={`/tags/${tagSlug(tag)}/`}>{tag}</a>)}</nav>
+  </article>
+</BaseLayout>

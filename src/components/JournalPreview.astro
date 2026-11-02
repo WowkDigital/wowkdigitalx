@@ -1,0 +1,10 @@
+---
+import { journalEntries } from '../lib/journal';
+import PostCard from './PostCard.astro';
+const entries = (await journalEntries()).slice(0, 3);
+---
+<section id="journal" data-ruler-label="JOURNAL" class="section section-pad">
+  <p class="eyebrow">JOURNAL / NOTES FROM THE STUDIO</p>
+  <div class="work-heading"><h2>IDEAS IN<br /><span class="muted">PROGRESS.</span></h2><a class="button text-button" href="/journal/">EXPLORE THE JOURNAL</a></div>
+  {entries.length ? <div class="journal-grid">{entries.map(entry => <PostCard entry={entry} />)}</div> : <p class="muted">Notes on design, technology and the things in between. First entries coming soon.</p>}
+</section>

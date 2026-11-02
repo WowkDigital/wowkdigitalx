@@ -1,6 +1,4 @@
-// Pure simulation rules; all boundaries wrap around.
-(function (root) {
-  function lifeStep(cells, width, height) {
+export function lifeStep(cells, width, height) {
     const next = new Uint8Array(cells.length);
     for (let y=0;y<height;y++) for(let x=0;x<width;x++) {
       let n=0;
@@ -10,10 +8,6 @@
     }
     return next;
   }
-  function elementaryStep(row, rule) {
+export function elementaryStep(row, rule) {
     return Uint8Array.from(row, (_,x)=> (rule >> ((row[(x+row.length-1)%row.length]<<2)|(row[x]<<1)|row[(x+1)%row.length]))&1);
   }
-  const api={lifeStep,elementaryStep};
-  if(typeof module!=='undefined'&&module.exports) module.exports=api;
-  else root.AutomataCore=api;
-})(globalThis);

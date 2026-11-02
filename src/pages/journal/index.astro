@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { journalEntries } from '../../lib/journal';
+import { tagSlug } from '../../lib/content-policy.mjs';
+const entries = await journalEntries();
+const tags: string[] = [...new Set(entries.flatMap(entry => entry.data.tags))].sort();
+---
+<BaseLayout title="Journal — WOWK DIGITAL X" description="Notes, articles and visual experiments from WOWK DIGITAL X.">
+  <section id="journal" data-ruler-label="JOURNAL" class="section section-pad journal-page">
+    <p class="eyebrow">JOURNAL / WOWK DIGITAL X</p><h1>THOUGHTS.<br /><span class="outline">IN THE MAKING.</span></h1>
+    <p class="lab-intro">Notes, articles and visual experiments. A place for ideas beyond the finished work.</p>
+    {tags.length > 0 && <nav class="journal-tags" aria-label="Browse journal topics">{tags.map(tag => <a href={`/tags/${tagSlug(tag)}/`}>{tag}</a>)}</nav>}
+    {entries.length ? <div class="journal-grid">{entries.map(entry => <PostCard entry={entry} />)}</div> : <p class="journal-empty">The journal is taking shape. New entries will appear here.</p>}
+  </section>
+</BaseLayout>
