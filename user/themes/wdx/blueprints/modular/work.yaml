@@ -1,0 +1,14 @@
+title: Work
+'@extends':
+  type: default
+  context: blueprints://pages
+form:
+  fields:
+    tabs:
+      fields:
+        content:
+          fields:
+            content:
+              type: markdown
+              label: Editor notes (not displayed on website)
+

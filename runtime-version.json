@@ -1,0 +1,7 @@
+{
+  "grav": "2.2.25",
+  "admin2": "2.2.9",
+  "source": "https://github.com/getgrav/grav/releases/download/2.2.25/grav-admin-v2.2.25.zip",
+  "sha256": "6d788cf74d095c417864c62a920980ce290d7ce444b9c955df511ed816c14f3f",
+  "phpMinimum": "8.3.11"
+}

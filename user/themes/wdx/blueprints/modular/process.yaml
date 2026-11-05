@@ -1,0 +1,24 @@
+title: Process
+'@extends':
+  type: default
+  context: blueprints://pages
+form:
+  fields:
+    tabs:
+      fields:
+        content:
+          fields:
+            header.items:
+              type: list
+              label: Items
+              fields:
+                .title:
+                  type: text
+                  label: Title
+                .text:
+                  type: textarea
+                  label: Description
+                .stage:
+                  type: text
+                  label: Stage label
+

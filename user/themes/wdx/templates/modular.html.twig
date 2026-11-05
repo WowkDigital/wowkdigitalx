@@ -1,0 +1,7 @@
+{% extends 'partials/base.html.twig' %}
+{% block content %}
+{% for module in page.collection() %}
+  {{ module.content|raw }}
+  {% if module.template == 'modular/lab' %}{% include 'partials/journal-preview.html.twig' %}{% endif %}
+{% endfor %}
+{% endblock %}

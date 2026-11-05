@@ -1,0 +1,14 @@
+title: Journal
+'@extends':
+  type: default
+  context: blueprints://pages
+child_type: item
+form:
+  fields:
+    tabs:
+      fields:
+        content:
+          fields:
+            content:
+              type: markdown
+              label: Journal introduction

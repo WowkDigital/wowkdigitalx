@@ -1,0 +1,4 @@
+<article class="journal-card"><a href="{{ entry.url }}">
+{% if entry.header.cover and entry.media[entry.header.cover] %}<img src="{{ entry.media[entry.header.cover].url }}" alt="{{ entry.header.cover_alt }}" loading="lazy">{% endif %}
+<p class="eyebrow">{{ entry.header.entry_type|default('note') }} / <time datetime="{{ entry.date|date('c') }}">{{ entry.date|date('j F Y') }}</time></p>
+<h3>{{ entry.title }}</h3><p>{{ entry.header.summary }}</p></a></article>

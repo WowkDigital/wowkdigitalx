@@ -1,0 +1,28 @@
+{% set is_home = page.template == 'modular' %}
+{% set description = page.header.summary|default(config.site.metadata.description) %}
+{% set canonical = config.site.production_url ~ (is_home ? '/' : page.url) %}
+{% set social_image = page.header.cover and page.media[page.header.cover] ? page.media[page.header.cover].url(true) : url('theme://images/og-image.png', true) %}
+<!doctype html>
+<html lang="en" class="dark"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark">
+<meta name="wdx-base" content="{{ base_url }}">
+<title>{{ is_home ? 'Digital content creator' : page.title ~ ' — WOWK DIGITAL X' }}</title>
+<meta name="description" content="{{ description }}"><meta name="author" content="WowkDigital"><meta name="theme-color" content="#10b981">
+<link rel="canonical" href="{{ canonical }}"><link rel="icon" href="{{ url('theme://images/logo.svg') }}" type="image/svg+xml">
+<meta property="og:type" content="{{ page.template == 'item' ? 'article' : 'website' }}"><meta property="og:title" content="{{ page.title }}"><meta property="og:description" content="{{ description }}"><meta property="og:url" content="{{ canonical }}"><meta property="og:image" content="{{ social_image }}"><meta property="og:site_name" content="WOWK DIGITAL X"><meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{{ page.title }}"><meta name="twitter:description" content="{{ description }}"><meta name="twitter:image" content="{{ social_image }}"><meta name="twitter:site" content="@wowkdigital">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url('theme://css/wdx.css') }}"><link rel="stylesheet" href="{{ url('theme://css/custom.css') }}">
+<link rel="alternate" type="application/rss+xml" href="{{ base_url }}/rss.xml" title="WDX Journal">
+{% block head %}{% endblock %}
+</head><body data-home="{{ is_home ? 'true' : 'false' }}">
+<a class="skip" href="#main">Skip to content</a>
+{% include 'partials/header.html.twig' %}
+<main id="main">{% block content %}{% endblock %}</main>
+{% include 'partials/footer.html.twig' %}
+<scroll-ruler aria-controls="main" aria-label="Page scroll position"></scroll-ruler>
+<script src="{{ url('theme://js/scroll-ruler.config.js') }}" defer></script><script src="{{ url('theme://js/scroll-ruler.js') }}" defer></script>
+<script src="{{ url('theme://js/site.js') }}" defer></script><script src="{{ url('theme://js/intro.js') }}" defer></script>
+{% if is_home %}<script src="{{ url('theme://js/hud.js') }}" defer></script><script src="{{ url('theme://js/automata-core.js') }}" defer></script><script src="{{ url('theme://js/automata.js') }}" defer></script>{% endif %}
+</body></html>
