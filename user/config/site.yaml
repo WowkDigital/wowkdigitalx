@@ -1,0 +1,12 @@
+title: WOWK DIGITAL X
+author:
+  name: WowkDigital
+email: kontakt@wowkdigitalx.pl
+production_url: https://wowkdigitalx.pl
+metadata:
+  description: Transform your ideas into digital products
+taxonomies: [tag]
+summary:
+  enabled: true
+  format: short
+  size: 250

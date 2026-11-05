@@ -1,0 +1,6 @@
+{% extends 'partials/base.html.twig' %}
+{% block content %}<article id="entry" data-ruler-label="JOURNAL" class="section section-pad journal-page"><a class="eyebrow journal-back" href="{{ base_url }}/journal">BACK TO JOURNAL</a><p class="eyebrow">{{ page.header.entry_type|default('note') }} / {{ page.date|date('j F Y') }}</p><h1 class="entry-title">{{ page.title }}</h1><p class="entry-description">{{ page.header.summary }}</p>
+{% if page.header.cover and page.media[page.header.cover] %}<img class="entry-cover" src="{{ page.media[page.header.cover].url }}" alt="{{ page.header.cover_alt }}">{% endif %}
+<div class="prose">{{ page.content|raw }}</div>
+{% if page.header.gallery %}<div class="entry-gallery">{% for image in page.header.gallery %}{% if page.media[image.file] %}<figure><img src="{{ page.media[image.file].url }}" alt="{{ image.alt }}" loading="lazy">{% if image.caption %}<figcaption>{{ image.caption }}</figcaption>{% endif %}</figure>{% endif %}{% endfor %}</div>{% endif %}
+<nav class="journal-tags" aria-label="Entry topics">{% for tag in page.taxonomy.tag %}<a href="{{ base_url }}/journal?tag={{ tag|url_encode }}">{{ tag }}</a>{% endfor %}</nav></article>{% endblock %}

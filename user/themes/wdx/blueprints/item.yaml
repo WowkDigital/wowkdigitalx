@@ -1,0 +1,64 @@
+title: Journal entry
+'@extends':
+  type: default
+  context: blueprints://pages
+form:
+  fields:
+    tabs:
+      fields:
+        content:
+          fields:
+            header.published:
+              type: toggle
+              label: Published
+              default: 0
+              options:
+                1: Yes
+                0: Draft
+              validate:
+                type: bool
+            header.summary:
+              type: textarea
+              label: Summary / SEO description
+              validate:
+                required: true
+            header.entry_type:
+              type: select
+              label: Entry format
+              default: note
+              options:
+                note: Short note
+                article: Article
+                gallery: Image gallery
+            header.cover:
+              type: filepicker
+              folder: '@self'
+              label: Cover image
+              preview_images: true
+              accept: [.png, .jpg, .jpeg, .webp, .avif, .gif]
+            header.cover_alt:
+              type: text
+              label: Cover image description
+            header.gallery:
+              type: list
+              label: Gallery images
+              fields:
+                .file:
+                  type: filepicker
+                  folder: '@self'
+                  label: Image
+                  preview_images: true
+                .alt:
+                  type: text
+                  label: Image description
+                  validate:
+                    required: true
+                .caption:
+                  type: text
+                  label: Caption
+            header.taxonomy.tag:
+              type: selectize
+              label: Topics
+              classes: fancy
+              validate:
+                type: commalist

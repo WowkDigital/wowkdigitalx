@@ -1,0 +1,10 @@
+name: WDX
+slug: wdx
+type: theme
+version: 1.0.0
+description: WOWK DIGITAL X studio theme with Journal and interactive Lab.
+icon: code
+author:
+  name: WowkDigital
+dependencies:
+  - { name: grav, version: '>=2.2.25' }

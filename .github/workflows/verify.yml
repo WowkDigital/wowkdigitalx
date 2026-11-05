@@ -1,0 +1,18 @@
+name: Verify Grav
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Restore checksum-pinned Grav and Admin2 runtime
+        run: python3 scripts/install-runtime.py
+      - uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea # v2
+        with:
+          php-version: '8.3'
+          extensions: curl, ctype, dom, gd, json, mbstring, openssl, session, simplexml, zip
+          coverage: none
+      - run: php scripts/check.php
+      - run: python3 scripts/test-site.py

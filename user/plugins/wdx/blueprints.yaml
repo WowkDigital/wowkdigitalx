@@ -1,0 +1,10 @@
+name: WDX
+slug: wdx
+type: plugin
+version: 1.0.0
+description: Public Journal feeds and theme context; no authentication bypasses.
+icon: code
+author:
+  name: WowkDigital
+dependencies:
+  - { name: grav, version: '>=2.2.25' }

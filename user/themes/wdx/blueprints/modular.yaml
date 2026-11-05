@@ -1,0 +1,4 @@
+title: Studio homepage
+'@extends':
+  type: modular
+  context: blueprints://pages

@@ -1,0 +1,23 @@
+title: Hero
+'@extends':
+  type: default
+  context: blueprints://pages
+form:
+  fields:
+    tabs:
+      fields:
+        content:
+          fields:
+            header.line_one:
+              type: text
+              label: Headline line 1
+            header.line_two:
+              type: text
+              label: Headline line 2
+            header.line_three:
+              type: text
+              label: Headline line 3
+            header.outline_word:
+              type: text
+              label: Outlined word
+

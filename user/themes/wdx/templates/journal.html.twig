@@ -1,0 +1,4 @@
+{% extends 'partials/base.html.twig' %}
+{% block content %}<section id="journal" data-ruler-label="JOURNAL" class="section section-pad journal-page"><p class="eyebrow">JOURNAL / WOWK DIGITAL X</p><h1>THOUGHTS.<br><span class="outline">IN THE MAKING.</span></h1><div class="lab-intro">{{ page.content|raw }}</div>
+{% if wdx_tags|length %}<nav class="journal-tags" aria-label="Journal topics"><a href="{{ page.url }}">All topics</a>{% for tag in wdx_tags %}<a href="{{ page.url }}?tag={{ tag|url_encode }}">{{ tag }}</a>{% endfor %}</nav>{% endif %}
+<div class="journal-grid">{% for entry in wdx_posts %}{% if not wdx_topic or wdx_topic in entry.taxonomy.tag %}{% include 'partials/card.html.twig' %}{% endif %}{% else %}<p class="journal-empty">The journal is taking shape. New entries will appear here.</p>{% endfor %}</div></section>{% endblock %}
